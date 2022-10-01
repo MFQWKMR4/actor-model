@@ -1,7 +1,7 @@
 package example
 
 import org.scalatest._
-import akka.actor.{ ActorSystem, Props }
+import akka.actor.{ ActorRef, ActorSystem, Props }
 import akka.testkit.{ TestActorRef, TestKit }
 import akka.testkit.TestKit.shutdownActorSystem
 
@@ -31,7 +31,7 @@ class SilentActorTest
         "multi thread" in {
             import SilentActor._
 
-            val silentActor = system.actorOf(Props[SilentActor], "s3")
+            val silentActor: ActorRef = system.actorOf(Props[SilentActor], "s3")
             silentActor ! SilentMessage("whisper1")
             silentActor ! SilentMessage("whisper2")
             silentActor ! GetState(testActor)

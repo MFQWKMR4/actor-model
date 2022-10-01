@@ -1,45 +1,44 @@
 package example
 
-import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+import akka.actor.{ Actor, ActorRef, ActorSystem, Props }
 
 object SilentActor {
-  case class SilentMessage(data: String)
+    case class SilentMessage(data: String)
 
-  case class GetState(receiver: ActorRef)
+    case class GetState(receiver: ActorRef)
 }
 
 class SilentActor extends Actor {
 
-  import SilentActor._
+    import SilentActor._
 
-  var internalState = Vector[String]()
+    var internalState = Vector[String]()
 
-  override def receive: Receive = {
-    case SilentMessage(data) => internalState = internalState :+ data
-    case GetState(receiver) => receiver ! internalState
-  }
+    override def receive: Receive = {
+        case SilentMessage(data) => internalState = internalState :+ data
+        case GetState(receiver)  => receiver ! internalState
+    }
 
-  def state = internalState
+    def state = internalState
 }
 
 object SendingActor {
-  def props(receiver: ActorRef) = Props(new SendingActor(receiver))
+    def props(receiver: ActorRef) = Props(new SendingActor(receiver))
 
-  case class Event(id: Long)
+    case class Event(id: Long)
 
-  case class SortEvents(unsorted: Vector[Event])
+    case class SortEvents(unsorted: Vector[Event])
 
-  case class SortedEvents(sorted: Vector[Event])
+    case class SortedEvents(sorted: Vector[Event])
 }
 
 class SendingActor(receiver: ActorRef) extends Actor {
 
-  import SendingActor._
+    import SendingActor._
 
-  def receive = {
-    case SortEvents(unsorted) =>
-      receiver ! SortedEvents(unsorted.sortBy(_.id))
-  }
+    def receive = { case SortEvents(unsorted) =>
+        receiver ! SortedEvents(unsorted.sortBy(_.id))
+    }
 }
 
 object Main extends App {
